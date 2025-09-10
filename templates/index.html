@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>一括リンク生成システム</title>
+    <title>2行2列入力表</title>
     <style>
         * {
             margin: 0;
@@ -11,288 +11,167 @@
             box-sizing: border-box;
         }
         
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-        }
-        
-        .container { 
-            max-width: 1600px; 
-            margin: 0 auto; 
-            background: white; 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        h1 { 
-            color: #2c3e50; 
-            border-bottom: 4px solid #4CAF50; 
-            padding-bottom: 15px; 
-            margin-bottom: 25px;
-        }
-        
-        .instructions { 
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            padding: 20px; 
-            border-radius: 10px; 
-            margin: 25px 0; 
-            border-left: 5px solid #2196F3;
-        }
-        
-        .action-buttons { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 12px; 
-            margin: 25px 0; 
+            display: flex;
             justify-content: center;
+            align-items: center;
         }
         
-        .btn { 
-            padding: 12px 20px; 
-            border: none; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-size: 14px; 
-            font-weight: 600;
-            transition: all 0.3s ease;
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 600px;
         }
         
-        .btn-add { background: #2196F3; color: white; }
-        .btn-clear { background: #FF9800; color: white; }
-        .btn-generate { background: #4CAF50; color: white; font-size: 16px; padding: 15px 25px; }
-        .btn-admin { background: #9C27B0; color: white; }
-        
-        .spreadsheet-container { 
-            margin: 25px 0; 
-            overflow-x: auto; 
-            border: 2px solid #e0e0e0; 
-            border-radius: 10px;
-        }
-        
-        .spreadsheet-table { 
-            width: 100%; 
-            border-collapse: collapse;
-        }
-        
-        .spreadsheet-table th { 
-            background: #4CAF50;
-            color: white; 
-            padding: 12px; 
+        h1 {
             text-align: center;
-            position: sticky;
-            top: 0;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2rem;
         }
         
-        .spreadsheet-table td { 
-            border: 1px solid #e0e0e0; 
-            padding: 8px;
+        .input-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
-        .spreadsheet-table input { 
-            width: 100%; 
-            padding: 8px; 
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        .input-table th {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid #388e3c;
         }
         
-        .row-number { 
-            background: #f5f5f5; 
-            text-align: center; 
-            font-weight: bold; 
-            width: 60px;
+        .input-table td {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
         }
         
-        .results-section { 
-            margin: 25px 0; 
+        .input-table input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        .input-table input:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            background: #f8fff8;
+        }
+        
+        .row-header {
+            background: #f8f9fa !important;
+            font-weight: bold;
+            text-align: center;
+            color: #2c3e50;
+            width: 80px;
+        }
+        
+        .success-message {
+            text-align: center;
+            color: #28a745;
+            font-weight: 600;
+            margin-top: 20px;
+            padding: 10px;
+            background: #d4edda;
+            border-radius: 5px;
             display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 一括リンク生成システム</h1>
+        <h1>📊 2行2列入力表</h1>
         
-        <div class="instructions">
-            <h3>📋 使い方</h3>
-            <ol>
-                <li><strong>B列（必須）</strong>: 短縮したい元のURLを入力</li>
-                <li><strong>C列（任意）</strong>: カスタム短縮コードを入力</li>
-                <li><strong>D列（任意）</strong>: カスタム名を入力</li>
-                <li><strong>E列（任意）</strong>: キャンペーン名を入力</li>
-                <li><strong>「生成開始」</strong>ボタンをクリック</li>
-            </ol>
-        </div>
-
-        <div class="action-buttons">
-            <button class="btn btn-add" onclick="addRow()">➕ 行追加</button>
-            <button class="btn btn-clear" onclick="clearTable()">🗑️ 全削除</button>
-            <button class="btn btn-generate" onclick="generateLinks()">🚀 生成開始</button>
-            <button class="btn btn-admin" onclick="window.location.href='/admin'">📊 管理画面</button>
-        </div>
-
-        <div class="spreadsheet-container">
-            <table class="spreadsheet-table" id="urlTable">
-                <thead>
-                    <tr>
-                        <th class="row-number">行</th>
-                        <th style="width: 40%;">URL ※必須</th>
-                        <th style="width: 15%;">カスタムコード</th>
-                        <th style="width: 15%;">カスタム名</th>
-                        <th style="width: 15%;">キャンペーン</th>
-                        <th style="width: 15%;">操作</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr>
-                        <td class="row-number">1</td>
-                        <td><input type="url" placeholder="https://example.com" required></td>
-                        <td><input type="text" placeholder="任意コード"></td>
-                        <td><input type="text" placeholder="表示名"></td>
-                        <td><input type="text" placeholder="キャンペーン名"></td>
-                        <td><button onclick="removeRow(this)">削除</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="results-section" id="results">
-            <h3>生成結果</h3>
-            <div id="resultContent"></div>
+        <table class="input-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>列 A</th>
+                    <th>列 B</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="row-header">行 1</td>
+                    <td>
+                        <input type="text" id="cell-a1" placeholder="A1セルを入力" />
+                    </td>
+                    <td>
+                        <input type="text" id="cell-b1" placeholder="B1セルを入力" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="row-header">行 2</td>
+                    <td>
+                        <input type="text" id="cell-a2" placeholder="A2セルを入力" />
+                    </td>
+                    <td>
+                        <input type="text" id="cell-b2" placeholder="B2セルを入力" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="success-message" id="successMessage">
+            ✅ 表の入力が完了しました！
         </div>
     </div>
 
     <script>
-        let rowCount = 1;
-
-        function addRow() {
-            rowCount++;
-            const tbody = document.getElementById('tableBody');
-            const newRow = tbody.insertRow();
-            newRow.innerHTML = `
-                <td class="row-number">${rowCount}</td>
-                <td><input type="url" placeholder="https://example.com" required></td>
-                <td><input type="text" placeholder="任意コード"></td>
-                <td><input type="text" placeholder="表示名"></td>
-                <td><input type="text" placeholder="キャンペーン名"></td>
-                <td><button onclick="removeRow(this)">削除</button></td>
-            `;
-        }
-
-        function removeRow(button) {
-            const row = button.parentNode.parentNode;
-            if (document.getElementById('tableBody').rows.length > 1) {
-                row.remove();
-                updateRowNumbers();
-            }
-        }
-
-        function updateRowNumbers() {
-            const rows = document.getElementById('tableBody').rows;
-            for (let i = 0; i < rows.length; i++) {
-                rows[i].cells[0].textContent = i + 1;
-            }
-            rowCount = rows.length;
-        }
-
-        function clearTable() {
-            if (confirm('すべての行を削除しますか？')) {
-                const tbody = document.getElementById('tableBody');
-                tbody.innerHTML = `
-                    <tr>
-                        <td class="row-number">1</td>
-                        <td><input type="url" placeholder="https://example.com" required></td>
-                        <td><input type="text" placeholder="任意コード"></td>
-                        <td><input type="text" placeholder="表示名"></td>
-                        <td><input type="text" placeholder="キャンペーン名"></td>
-                        <td><button onclick="removeRow(this)">削除</button></td>
-                    </tr>
-                `;
-                rowCount = 1;
-                document.getElementById('results').style.display = 'none';
-            }
-        }
-
-        async function generateLinks() {
-            const rows = document.getElementById('tableBody').rows;
-            const data = [];
-            
-            for (let i = 0; i < rows.length; i++) {
-                const inputs = rows[i].getElementsByTagName('input');
-                const url = inputs[0].value.trim();
+        // 入力フィールドの変更を監視
+        const inputs = document.querySelectorAll('.input-table input');
+        const successMessage = document.getElementById('successMessage');
+        
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                // すべての入力欄に値が入っているかチェック
+                const allFilled = Array.from(inputs).every(input => input.value.trim() !== '');
                 
-                if (url) {
-                    data.push({
-                        url: url,
-                        custom_code: inputs[1].value.trim(),
-                        custom_name: inputs[2].value.trim(),
-                        campaign: inputs[3].value.trim(),
-                        original_row: i + 1
-                    });
+                if (allFilled) {
+                    successMessage.style.display = 'block';
+                    // 3秒後にメッセージを非表示
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 3000);
                 }
-            }
-            
-            if (data.length === 0) {
-                alert('少なくとも1つのURLを入力してください');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/bulk-generate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'data=' + encodeURIComponent(JSON.stringify(data))
-                });
-                
-                const result = await response.json();
-                showResults(result);
-                
-            } catch (error) {
-                alert('エラーが発生しました: ' + error.message);
-            }
-        }
-
-        function showResults(result) {
-            const resultsDiv = document.getElementById('results');
-            const contentDiv = document.getElementById('resultContent');
-            
-            let html = '<div style="margin-top: 20px;">';
-            
-            if (result.results) {
-                result.results.forEach(item => {
-                    if (item.success) {
-                        html += `
-                            <div style="background: #d4edda; padding: 15px; margin: 10px 0; border-radius: 5px;">
-                                <strong>行${item.original_row}:</strong> ${item.url}<br>
-                                <strong>短縮URL:</strong> <a href="${item.short_url}" target="_blank">${item.short_url}</a>
-                                <button onclick="copyToClipboard('${item.short_url}')">コピー</button>
-                            </div>
-                        `;
-                    } else {
-                        html += `
-                            <div style="background: #f8d7da; padding: 15px; margin: 10px 0; border-radius: 5px;">
-                                <strong>行${item.original_row}:</strong> ${item.url}<br>
-                                <strong>エラー:</strong> ${item.error}
-                            </div>
-                        `;
-                    }
-                });
-            }
-            
-            html += '</div>';
-            contentDiv.innerHTML = html;
-            resultsDiv.style.display = 'block';
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert('コピーしました: ' + text);
             });
-        }
+            
+            // Enterキーで次の入力欄に移動
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const currentIndex = Array.from(inputs).indexOf(this);
+                    if (currentIndex < inputs.length - 1) {
+                        inputs[currentIndex + 1].focus();
+                    }
+                }
+            });
+        });
+        
+        // ページ読み込み時に最初の入力欄にフォーカス
+        window.addEventListener('load', function() {
+            inputs[0].focus();
+        });
     </script>
 </body>
 </html>
