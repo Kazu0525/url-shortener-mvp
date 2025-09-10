@@ -1,9 +1,6 @@
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
-from typing import List, Optional
 import random
 import string
 import json
@@ -11,14 +8,10 @@ import os
 from datetime import datetime
 
 app = FastAPI()
-
-# テンプレート設定
 templates = Jinja2Templates(directory="templates")
 
 # データベース（メモリ内）
 url_db = {}
-campaigns = {}
-analytics = {}
 
 def generate_code(length=6):
     """ランダムコード生成"""
@@ -33,7 +26,6 @@ def create_short_url(original_url, custom_code=None, custom_name=None, campaign=
         if custom_code:
             return None, "このコードは既に使用されています"
         else:
-            # 自動生成の場合は再生成
             while code in url_db:
                 code = generate_code()
     
@@ -48,8 +40,8 @@ def create_short_url(original_url, custom_code=None, custom_name=None, campaign=
     return code, None
 
 @app.get("/", response_class=HTMLResponse)
-@app.head("/")
 async def home(request: Request):
+    """ホームページ - 表形式スプレッドシートUI"""
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/api/bulk-generate")
@@ -69,7 +61,7 @@ async def bulk_generate(data: str = Form(...)):
             if not url:
                 continue
                 
-            if not url.startsWith(('http://', 'https://')):
+            if not url.startswith(('http://', 'https://')):
                 results.append({
                     "url": url,
                     "success": False,
@@ -124,7 +116,6 @@ async def redirect_url(code: str):
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_page(request: Request):
     """管理画面"""
-    # キャンペーン別の統計
     campaign_stats = {}
     for code, data in url_db.items():
         campaign = data.get("campaign", "未分類")
