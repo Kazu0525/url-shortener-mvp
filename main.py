@@ -651,7 +651,7 @@ async def bulk_generate(data: str = Form(...)):
                     "error": error
                 })
             else:
-                base_url = "https://url-shortener-spreadsheet.onrender.com"  # あなたのRender URLに変更
+                base_url = os.environ.get("RENDER_EXTERNAL_URL", "https://url-shortener-spreadsheet.onrender.com")
                 results.append({
                     "url": url,
                     "success": True,
