@@ -131,6 +131,11 @@ async def home():
             box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
         
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
         .btn-add { 
             background: linear-gradient(135deg, #2196F3 0%, #1976d2 100%);
             color: white; 
@@ -181,6 +186,7 @@ async def home():
             position: sticky;
             top: 0;
             z-index: 10;
+            white-space: nowrap;
         }
         
         .spreadsheet-table th:last-child {
@@ -222,26 +228,6 @@ async def home():
             font-size: 14px;
         }
         
-        .delete-btn { 
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white; 
-            border: none; 
-            padding: 8px 16px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .delete-btn:hover { 
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-        }
-        
         .results-section { 
             margin: 35px 0; 
             display: none; 
@@ -264,6 +250,9 @@ async def home():
             background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
             border-left: 5px solid #dc3545;
             color: #721c24;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
             box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
         }
         
@@ -319,6 +308,7 @@ async def home():
             font-size: 14px;
             display: inline-block;
             margin: 5px 0;
+            word-break: break-all;
         }
         
         .summary-box {
@@ -329,18 +319,8 @@ async def home():
             border-left: 5px solid #2196F3;
         }
         
-        @media (max-width: 768px) {
-            .spreadsheet-container {
-                overflow-x: scroll;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-            }
+        .operation-cell {
+            text-align: center;
         }
     </style>
 </head>
@@ -365,7 +345,7 @@ async def home():
             <button type="button" class="btn btn-add" onclick="addRows(5)">➕ 5行追加</button>
             <button type="button" class="btn btn-add" onclick="addRows(10)">➕ 10行追加</button>
             <button type="button" class="btn btn-clear" onclick="clearAllData()">🗑️ 全削除</button>
-            <button type="button" class="btn btn-generate" onclick="startGeneration()">🚀 一括生成開始</button>
+            <button type="button" class="btn btn-generate" id="generateBtn" onclick="startGeneration()">🚀 一括生成開始</button>
             <button type="button" class="btn btn-admin" onclick="window.location.href='/admin'">📊 管理画面へ</button>
         </div>
 
@@ -373,17 +353,61 @@ async def home():
             <table class="spreadsheet-table">
                 <thead>
                     <tr>
-                        <th style="width: 70px;">A<br>行番号</th>
+                        <th style="width: 60px;">A<br>行番号</th>
                         <th style="width: 35%;">B<br>オリジナルURL ※必須</th>
-                        <th style="width: 12%;">C<br>カスタム短縮コード<br>(任意)</th>
-                        <th style="width: 12%;">D<br>カスタム名<br>(任意)</th>
-                        <th style="width: 12%;">E<br>キャンペーン名<br>(任意)</th>
-                        <th style="width: 8%;">F<br>生成数量<br>(任意)</th>
-                        <th style="width: 100px;">操作</th>
+                        <th style="width: 15%;">C<br>カスタム短縮コード<br>(任意)</th>
+                        <th style="width: 15%;">D<br>カスタム名<br>(任意)</th>
+                        <th style="width: 15%;">E<br>キャンペーン名<br>(任意)</th>
+                        <th style="width: 10%;">F<br>生成数量<br>(任意)</th>
+                        <th style="width: 10%;">操作</th>
                     </tr>
                 </thead>
                 <tbody id="dataTable">
-                    <!-- 初期行 -->
+                    <tr>
+                        <td class="row-number">1</td>
+                        <td><input type="url" placeholder="https://example.com" /></td>
+                        <td><input type="text" placeholder="例: product01" /></td>
+                        <td><input type="text" placeholder="例: 商品A" /></td>
+                        <td><input type="text" placeholder="例: 春キャンペーン" /></td>
+                        <td><input type="number" min="1" max="20" value="1" /></td>
+                        <td class="operation-cell"></td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">2</td>
+                        <td><input type="url" placeholder="https://example.com" /></td>
+                        <td><input type="text" placeholder="例: product02" /></td>
+                        <td><input type="text" placeholder="例: 商品B" /></td>
+                        <td><input type="text" placeholder="例: 春キャンペーン" /></td>
+                        <td><input type="number" min="1" max="20" value="1" /></td>
+                        <td class="operation-cell"></td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">3</td>
+                        <td><input type="url" placeholder="https://example.com" /></td>
+                        <td><input type="text" placeholder="例: product03" /></td>
+                        <td><input type="text" placeholder="例: 商品C" /></td>
+                        <td><input type="text" placeholder="例: 春キャンペーン" /></td>
+                        <td><input type="number" min="1" max="20" value="1" /></td>
+                        <td class="operation-cell"></td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">4</td>
+                        <td><input type="url" placeholder="https://example.com" /></td>
+                        <td><input type="text" placeholder="例: product04" /></td>
+                        <td><input type="text" placeholder="例: 商品D" /></td>
+                        <td><input type="text" placeholder="例: 春キャンペーン" /></td>
+                        <td><input type="number" min="1" max="20" value="1" /></td>
+                        <td class="operation-cell"></td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">5</td>
+                        <td><input type="url" placeholder="https://example.com" /></td>
+                        <td><input type="text" placeholder="例: product05" /></td>
+                        <td><input type="text" placeholder="例: 商品E" /></td>
+                        <td><input type="text" placeholder="例: 春キャンペーン" /></td>
+                        <td><input type="number" min="1" max="20" value="1" /></td>
+                        <td class="operation-cell"></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -391,7 +415,6 @@ async def home():
         <div class="action-buttons">
             <button type="button" class="btn btn-add" onclick="addRows(1)">➕ 1行追加</button>
             <button type="button" class="btn btn-add" onclick="addRows(5)">➕ 5行追加</button>
-            <button type="button" class="btn btn-add" onclick="addRows(10)">➕ 10行追加</button>
             <button type="button" class="btn btn-clear" onclick="clearAllData()">🗑️ 全削除</button>
             <button type="button" class="btn btn-generate" onclick="startGeneration()">🚀 一括生成開始</button>
         </div>
@@ -404,14 +427,8 @@ async def home():
 
     <script>
         // グローバル変数
-        let rowCount = 0;
+        let rowCount = 5;
         const baseUrl = window.location.origin;
-        
-        // 初期化
-        window.addEventListener('DOMContentLoaded', function() {
-            // 初期行を5行追加
-            addRows(5);
-        });
         
         // 行追加機能
         function addRows(count) {
@@ -420,28 +437,15 @@ async def home():
             for (let i = 0; i < count; i++) {
                 rowCount++;
                 const newRow = table.insertRow();
-                newRow.innerHTML = \`
-                    <td class="row-number">\${rowCount}</td>
-                    <td><input type="url" placeholder="https://example.com" /></td>
-                    <td><input type="text" placeholder="例: product\${rowCount.toString().padStart(2, '0')}" /></td>
-                    <td><input type="text" placeholder="例: 商品\${String.fromCharCode(65 + ((rowCount - 1) % 26))}" /></td>
-                    <td><input type="text" placeholder="例: 春キャンペーン" /></td>
-                    <td><input type="number" min="1" max="20" value="1" /></td>
-                    <td><button class="delete-btn" onclick="deleteRow(this)">🗑️ 削除</button></td>
-                \`;
+                newRow.innerHTML = '<td class="row-number">' + rowCount + '</td>' +
+                    '<td><input type="url" placeholder="https://example.com" /></td>' +
+                    '<td><input type="text" placeholder="例: product' + rowCount.toString().padStart(2, '0') + '" /></td>' +
+                    '<td><input type="text" placeholder="例: 商品' + String.fromCharCode(65 + ((rowCount - 1) % 26)) + '" /></td>' +
+                    '<td><input type="text" placeholder="例: 春キャンペーン" /></td>' +
+                    '<td><input type="number" min="1" max="20" value="1" /></td>' +
+                    '<td class="operation-cell"></td>';
             }
             updateRowNumbers();
-        }
-        
-        // 行削除機能
-        function deleteRow(button) {
-            const table = document.getElementById('dataTable');
-            if (table.rows.length > 1) {
-                button.closest('tr').remove();
-                updateRowNumbers();
-            } else {
-                alert('最低1行は必要です');
-            }
         }
         
         // 行番号更新
@@ -458,9 +462,15 @@ async def home():
         function clearAllData() {
             if (confirm('全てのデータを削除しますか？')) {
                 const table = document.getElementById('dataTable');
-                table.innerHTML = '';
-                rowCount = 0;
-                addRows(1); // 最低1行追加
+                // 全ての入力フィールドをクリア
+                const inputs = table.querySelectorAll('input');
+                inputs.forEach(input => {
+                    if (input.type === 'number') {
+                        input.value = '1';
+                    } else {
+                        input.value = '';
+                    }
+                });
                 document.getElementById('resultsArea').style.display = 'none';
             }
         }
@@ -479,19 +489,28 @@ async def home():
                 
                 if (url) {
                     if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                        alert(\`行 \${i + 1}: URLは http:// または https:// で始めてください\`);
+                        alert('行 ' + (i + 1) + ': URLは http:// または https:// で始めてください');
                         return;
                     }
                     
+                    const customCode = inputs[1].value.trim();
+                    const customName = inputs[2].value.trim();
+                    const campaign = inputs[3].value.trim();
                     const quantity = parseInt(inputs[4].value) || 1;
                     
                     // 指定数量分だけリクエストを作成
                     for (let j = 0; j < quantity; j++) {
+                        let code = customCode;
+                        if (customCode && quantity > 1) {
+                            code = customCode + '_' + (j + 1);
+                        }
+                        
                         requestData.push({
                             url: url,
-                            custom_code: inputs[1].value.trim() ? inputs[1].value.trim() + (quantity > 1 ? \`_\${j + 1}\` : '') : '',
-                            custom_name: inputs[2].value.trim(),
-                            campaign: inputs[3].value.trim()
+                            custom_code: code,
+                            custom_name: customName + (quantity > 1 ? ' (' + (j + 1) + ')' : ''),
+                            campaign: campaign,
+                            original_row: i + 1
                         });
                     }
                 }
@@ -503,11 +522,9 @@ async def home():
             }
             
             // 生成処理
-            const generateBtns = document.querySelectorAll('.btn-generate');
-            generateBtns.forEach(btn => {
-                btn.disabled = true;
-                btn.textContent = '⏳ 生成中...';
-            });
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.disabled = true;
+            generateBtn.textContent = '⏳ 生成中...';
             
             const resultsArea = document.getElementById('resultsArea');
             const resultsContent = document.getElementById('resultsContent');
@@ -524,19 +541,17 @@ async def home():
                 });
                 
                 if (!response.ok) {
-                    throw new Error(\`処理エラー: \${response.status}\`);
+                    throw new Error('処理エラー: ' + response.status);
                 }
                 
                 const result = await response.json();
                 showResults(result);
                 
             } catch (error) {
-                resultsContent.innerHTML = \`<div class="error-item">エラーが発生しました: \${error.message}</div>\`;
+                resultsContent.innerHTML = '<div class="error-item">エラーが発生しました: ' + error.message + '</div>';
             } finally {
-                generateBtns.forEach(btn => {
-                    btn.disabled = false;
-                    btn.textContent = '🚀 一括生成開始';
-                });
+                generateBtn.disabled = false;
+                generateBtn.textContent = '🚀 一括生成開始';
             }
         }
         
@@ -553,41 +568,52 @@ async def home():
                 });
             }
             
-            let html = \`
-                <div class="summary-box">
-                    <h3 style="margin: 0 0 15px 0; color: #1976d2;">📊 生成結果サマリー</h3>
-                    <p style="margin: 0; font-size: 16px;">
-                        成功: <strong style="color: #28a745;">\${successCount}</strong> | 
-                        エラー: <strong style="color: #dc3545;">\${errorCount}</strong> | 
-                        合計: <strong>\${successCount + errorCount}</strong>
-                    </p>
-                </div>
-            \`;
+            let html = '<div class="summary-box">' +
+                '<h3 style="margin: 0 0 15px 0; color: #1976d2;">📊 生成結果サマリー</h3>' +
+                '<p style="margin: 0; font-size: 16px;">' +
+                '成功: <strong style="color: #28a745;">' + successCount + '</strong> | ' +
+                'エラー: <strong style="color: #dc3545;">' + errorCount + '</strong> | ' +
+                '合計: <strong>' + (successCount + errorCount) + '</strong>' +
+                '</p></div>';
             
+            // 行番号でグループ化
+            const groupedResults = {};
             if (result.results) {
-                result.results.forEach((item, index) => {
-                    if (item.success) {
-                        html += \`
-                            <div class="result-item">
-                                <p style="margin: 0 0 8px 0;"><strong>\${index + 1}. 元URL:</strong> \${item.url}</p>
-                                \${item.custom_name ? \`<p style="margin: 0 0 8px 0;"><strong>カスタム名:</strong> \${item.custom_name}</p>\` : ''}
-                                \${item.campaign ? \`<p style="margin: 0 0 8px 0;"><strong>キャンペーン:</strong> \${item.campaign}</p>\` : ''}
-                                <p style="margin: 0;">
-                                    <strong>短縮URL:</strong><br>
-                                    <span class="short-url">\${item.short_url}</span>
-                                    <button class="copy-btn" onclick="copyText('\${item.short_url}', this)">📋 コピー</button>
-                                </p>
-                            </div>
-                        \`;
-                    } else {
-                        html += \`
-                            <div class="error-item">
-                                <p style="margin: 0;">❌ \${item.url} - \${item.error}</p>
-                            </div>
-                        \`;
+                result.results.forEach(item => {
+                    const row = item.original_row || 0;
+                    if (!groupedResults[row]) {
+                        groupedResults[row] = [];
                     }
+                    groupedResults[row].push(item);
                 });
             }
+            
+            // グループごとに表示
+            Object.keys(groupedResults).sort((a, b) => a - b).forEach(row => {
+                const items = groupedResults[row];
+                items.forEach((item, index) => {
+                    if (item.success) {
+                        html += '<div class="result-item">' +
+                            '<p style="margin: 0 0 8px 0;"><strong>行' + row + (items.length > 1 ? ' (' + (index + 1) + '/' + items.length + ')' : '') + '</strong></p>' +
+                            '<p style="margin: 0 0 8px 0;"><strong>元URL:</strong> ' + item.url + '</p>';
+                        if (item.custom_name) {
+                            html += '<p style="margin: 0 0 8px 0;"><strong>カスタム名:</strong> ' + item.custom_name + '</p>';
+                        }
+                        if (item.campaign) {
+                            html += '<p style="margin: 0 0 8px 0;"><strong>キャンペーン:</strong> ' + item.campaign + '</p>';
+                        }
+                        html += '<p style="margin: 0;">' +
+                            '<strong>短縮URL:</strong><br>' +
+                            '<span class="short-url">' + item.short_url + '</span>' +
+                            '<button class="copy-btn" onclick="copyText(\'' + item.short_url.replace(/'/g, "\\'") + '\', this)">📋 コピー</button>' +
+                            '</p></div>';
+                    } else {
+                        html += '<div class="error-item">' +
+                            '<p style="margin: 0;">❌ 行' + row + ' - ' + item.url + '<br>エラー: ' + item.error + '</p>' +
+                            '</div>';
+                    }
+                });
+            });
             
             resultsContent.innerHTML = html;
         }
@@ -624,6 +650,7 @@ async def bulk_generate(data: str = Form(...)):
             custom_code = item.get('custom_code', '').strip()
             custom_name = item.get('custom_name', '').strip()
             campaign = item.get('campaign', '').strip()
+            original_row = item.get('original_row', 0)
             
             if not url:
                 continue
@@ -632,7 +659,8 @@ async def bulk_generate(data: str = Form(...)):
                 results.append({
                     "url": url,
                     "success": False,
-                    "error": "無効なURL形式"
+                    "error": "無効なURL形式",
+                    "original_row": original_row
                 })
                 continue
             
@@ -648,7 +676,8 @@ async def bulk_generate(data: str = Form(...)):
                 results.append({
                     "url": url,
                     "success": False,
-                    "error": error
+                    "error": error,
+                    "original_row": original_row
                 })
             else:
                 base_url = os.environ.get("RENDER_EXTERNAL_URL", "https://url-shortener-spreadsheet.onrender.com")
@@ -658,7 +687,8 @@ async def bulk_generate(data: str = Form(...)):
                     "short_url": f"{base_url}/s/{code}",
                     "short_code": code,
                     "custom_name": custom_name,
-                    "campaign": campaign
+                    "campaign": campaign,
+                    "original_row": original_row
                 })
         
         return JSONResponse({"results": results})
@@ -824,34 +854,6 @@ async def admin_page():
     html += """
             </tbody>
         </table>
-        
-        <div class="campaign-section">
-            <h2>🎯 キャンペーン別統計</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>キャンペーン名</th>
-                        <th>URL数</th>
-                        <th>総クリック数</th>
-                        <th>平均クリック数</th>
-                    </tr>
-                </thead>
-                <tbody>"""
-    
-    for campaign, stats in sorted(campaign_stats.items(), key=lambda x: x[1]["clicks"], reverse=True):
-        avg_clicks = round(stats["clicks"] / stats["count"], 1) if stats["count"] > 0 else 0
-        html += f"""
-                    <tr>
-                        <td>{campaign}</td>
-                        <td>{stats["count"]}</td>
-                        <td>{stats["clicks"]}</td>
-                        <td>{avg_clicks}</td>
-                    </tr>"""
-    
-    html += """
-                </tbody>
-            </table>
-        </div>
         
         <a href="/" class="btn-back">🏠 ホームに戻る</a>
     </div>
