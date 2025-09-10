@@ -478,19 +478,6 @@ BULK_HTML = """
             <button class="btn btn-primary" onclick="window.location.href='/admin'">📊 管理画面へ</button>
         </div>
 
-        <div class="spreadsheet-container">
-            <table class="spreadsheet-table" id="spreadsheetTable">
-                <thead>
-                    <tr>
-                        <th class="row-number">A<br>行番号</th>
-                        <th style="width: 40%;">B<br>オリジナルURL ※必須</th>
-                        <th style="width: 12%;">C<br>カスタム短縮コード<br>(任意)</th>
-                        <th style="width: 12%;">D<br>カスタム名<br>(任意)</th>
-                        <th style="width: 12%;">E<br>キャンペーン名<br>(任意)</th>
-                        <th style="width: 8%;" class="quantity-column">F<br>生成数量<br>(任意)</th>
-                        <th style="width: 10%;">操作</th>
-                    </tr>
-                </thead>
 <div class="spreadsheet-container">
     <table class="spreadsheet-table" id="spreadsheetTable">
         <thead>
