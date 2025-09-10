@@ -491,17 +491,28 @@ BULK_HTML = """
                         <th style="width: 10%;">操作</th>
                     </tr>
                 </thead>
-                <tbody id="spreadsheetBody">
-                    <tr>
-                        <td class="row-number">1</td>
-                        <td><input type="url" class="required" placeholder="https://example.com" required /></td>
-                        <td><input type="text" placeholder="例: product01" /></td>
-                        <td><input type="text" placeholder="例: 商品A" /></td>
-                        <td><input type="text" placeholder="例: 春キャンペーン" /></td>
-                        <td><input type="number" min="1" max="20" value="1" class="quantity-column" /></td>
-                        <td><button class="delete-row-btn" onclick="removeRow(this)">⌫ 削除</button></td>
-                    </tr>
-                </tbody>
+<tbody id="spreadsheetBody">
+    <!-- 1行目 -->
+    <tr>
+        <td class="row-number">1</td>
+        <td><input type="url" class="required" placeholder="https://example.com" required /></td>
+        <td><input type="text" placeholder="例: product01" /></td>
+        <td><input type="text" placeholder="例: 商品A" /></td>
+        <td><input type="text" placeholder="例: 春キャンペーン" /></td>
+        <td><input type="number" min="1" max="20" value="1" class="quantity-column" /></td>
+        <td><button class="delete-row-btn" onclick="removeRow(this)">⌫ 削除</button></td>
+    </tr>
+    <!-- 2行目 -->
+    <tr>
+        <td class="row-number">2</td>
+        <td><input type="url" class="required" placeholder="https://example2.com" required /></td>
+        <td><input type="text" placeholder="例: product02" /></td>
+        <td><input type="text" placeholder="例: 商品B" /></td>
+        <td><input type="text" placeholder="例: 夏キャンペーン" /></td>
+        <td><input type="number" min="1" max="20" value="1" class="quantity-column" /></td>
+        <td><button class="delete-row-btn" onclick="removeRow(this)">⌫ 削除</button></td>
+    </tr>
+</tbody>
             </table>
         </div>
 
